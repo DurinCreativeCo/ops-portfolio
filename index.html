@@ -114,7 +114,23 @@
             border-radius: 0;
             display: inline-block;
         }
-
+        
+        #about-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 2rem auto 0 auto; /* Centers the block */
+            line-height: 1.6;
+            letter-spacing: 0.05em;
+            font-weight: 400;
+            
+            /* Hidden initially for the fade-in */
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
         hr {
             border: none;
             height: 1px;
@@ -147,6 +163,9 @@
             <h1>FirstName LastName</h1> 
             <hr>
             <h2>Operations Specialist & Systems Architect</h2>
+
+            <!-- ADD THIS LINE BELOW YOUR H2 -->
+            <p id="about-text">Loading...</p>
         </div>
     </section>
 
@@ -263,7 +282,10 @@
 
                 const h2 = document.querySelector('h2'); 
                 if(s.sub_text) h2.innerText = s.sub_text; 
-                h2.style.color = s.sub_color; 
+                h2.style.color = s.sub_color;
+
+                const about = document.getElementById('about-text');
+                if(s.about_text) about.innerText = s.about_text;
 
                 const hero = document.getElementById('hero'); 
                 if (hero && s.bg_url) { 
@@ -272,7 +294,7 @@
                 } 
 
                 // LIFT THE VEIL: Show everything once data is ready
-                document.querySelectorAll('h1, h2, hr').forEach(el => {
+                document.querySelectorAll('h1, h2, hr', #about-text').forEach(el => {
                     el.style.visibility = 'visible';
                     el.style.opacity = '1';
                 });
