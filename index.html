@@ -106,11 +106,16 @@
             color: var(--sub-text);
             letter-spacing: 0.35em;
             text-transform: uppercase;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 10px 20px;
-            backdrop-filter: blur(8px);
+            
+            /* --- REMOVED THE BOX STYLING --- */
+            background: none; 
+            padding: 0;
+            backdrop-filter: none;
+            border-radius: 0;
             display: inline-block;
-            border-radius: 4px;
+            
+            /* Optional: Add a subtle text-shadow to help it pop against the clouds */
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         hr {
