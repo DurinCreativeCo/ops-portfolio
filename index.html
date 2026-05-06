@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio | FirstName LastName</title>
     <!-- Google Fonts: Montserrat for Title, Roboto Mono for Subtitle -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto+Mono:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono:wght@600&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -30,7 +30,7 @@
 
         .hero {
             position: relative;
-            min-height: 100vh; /* Changed from height to min-height */
+            min-height: 100vh;
             width: 100%;
             display: flex;
             align-items: center;
@@ -38,15 +38,14 @@
             flex-direction: column;
             text-align: center; 
             
-            /* Background logic */
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--banner-img); 
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* This keeps the image still while text moves */
+            background-attachment: fixed;
             
             color: white;
             overflow: hidden;
-            padding: 40px 0; /* Adds breathability so text doesn't hit the edges */
+            padding: 40px 0;
         }
 
         .content {
@@ -78,11 +77,10 @@
             transition: background 0.1s ease-out;
         }
 
-        /* --- THE VEIL: Hidden by default to prevent flicker --- */
-        h1, h2, hr {
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
+        /* --- VISIBILITY: Reset to visible for instant loading --- */
+        h1, h2, hr, #about-text {
+            visibility: visible;
+            opacity: 1;
         }
 
         h1 {
@@ -93,7 +91,7 @@
             letter-spacing: -0.03em;
             line-height: 1.1;
             text-transform: uppercase; 
-            word-spacing: 20px;
+            word-spacing: 10px;
             color: var(--accent-white);
             text-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
@@ -106,29 +104,18 @@
             color: var(--sub-text);
             letter-spacing: 0.35em;
             text-transform: uppercase;
-            
-            /* --- REMOVED THE BOX STYLING --- */
-            background: none; 
-            padding: 0;
-            backdrop-filter: none;
-            border-radius: 0;
-            display: inline-block;
         }
         
         #about-text {
             font-family: 'Montserrat', sans-serif;
             font-size: clamp(1rem, 1.8vw, 1.2rem);
             color: rgba(255, 255, 255, 0.8);
-            max-width: 600px;
-            margin: 2rem auto 0 auto; /* Centers the block */
+            max-width: 650px;
+            margin: 2rem auto 0 auto;
             line-height: 1.6;
             letter-spacing: 0.05em;
             font-weight: 400;
-            
-            /* Hidden initially for the fade-in */
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         
         hr {
@@ -137,7 +124,6 @@
             background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.5), transparent);
             width: 60%;
             margin: 1.5rem auto;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
         }
 
         #canvas {
@@ -151,6 +137,7 @@
 
         @media (max-width: 768px) {
             h2 { letter-spacing: 0.15em; font-size: 0.95rem; }
+            h1 { word-spacing: 5px; }
         }
     </style>
 </head>
@@ -163,9 +150,7 @@
             <h1>FirstName LastName</h1> 
             <hr>
             <h2>Operations Specialist & Systems Architect</h2>
-
-            <!-- ADD THIS LINE BELOW YOUR H2 -->
-            <p id="about-text">Loading...</p>
+            <p id="about-text">I help small businesses work smarter, save time, and scale by building the systems that run behind the scenes.</p>
         </div>
     </section>
 
@@ -265,52 +250,8 @@
             }
             requestAnimationFrame(animate);
         }
-       
-        // --- UPDATED SYNC LOGIC WITH FADE-IN --- 
-        async function syncDesign() { 
-            const API_URL = "https://script.google.com/macros/s/AKfycbxsOBjG8V5WHxfeZd7DrDfHrk4p6mVCHjpKCv7Hp-hI2BPbpZf13ASnQpbH66TtvbwQ/exec"; 
 
-            try { 
-                const response = await fetch(API_URL); 
-                const s = await response.json(); 
-
-                const h1 = document.querySelector('h1'); 
-                if(s.title_text) h1.innerText = s.title_text; 
-                h1.style.fontSize = s.title_size; 
-                h1.style.fontWeight = s.title_weight; 
-                h1.style.color = s.title_color; 
-
-                const h2 = document.querySelector('h2'); 
-                if(s.sub_text) h2.innerText = s.sub_text; 
-                h2.style.color = s.sub_color;
-
-                const about = document.getElementById('about-text');
-                if(s.about_text) about.innerText = s.about_text;
-
-                const hero = document.getElementById('hero'); 
-                if (hero && s.bg_url) { 
-                   hero.style.backgroundImage = `linear-gradient(rgba(0,0,0,${s.bg_darkness}), rgba(0,0,0,${s.bg_darkness})), url('${s.bg_url}')`; 
-                   hero.style.filter = `saturate(${s.bg_saturation}) brightness(1.05) blur(${s.bg_blur})`; 
-                } 
-
-                // LIFT THE VEIL: Show everything once data is ready
-                document.querySelectorAll('h1, h2, hr', #about-text').forEach(el => {
-                    el.style.visibility = 'visible';
-                    el.style.opacity = '1';
-                });
-
-            } catch (e) { 
-               console.error("The 'Handshake' failed:", e); 
-               // Fallback: show original content if sync fails
-               document.querySelectorAll('h1, h2, hr').forEach(el => {
-                    el.style.visibility = 'visible';
-                    el.style.opacity = '1';
-                });
-            } 
-        } 
-
-        // --- START EVERYTHING --- 
-        syncDesign(); 
+        // Canvas Round Rect Fallback
         if (!CanvasRenderingContext2D.prototype.roundRect) { 
             CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) { 
                 if (w < 2 * r) r = w / 2; 
@@ -324,6 +265,7 @@
                 return this; 
             } 
         } 
+        
         animate();
     </script> 
 </body> 
