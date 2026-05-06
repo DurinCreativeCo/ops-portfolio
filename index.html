@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | FirstName LastName</title>
+    <!-- Google Fonts: Montserrat for Title, Roboto Mono for Subtitle -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto+Mono:wght@600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* High-resolution predawn sky image provided */
+            --banner-img: url('https://upload.wikimedia.org/wikipedia/commons/f/f3/Predawn_sky_with_deep_blue_hues_%28d062ce63-14b5-4cc2-a64e-62a33af3aeff%29.jpg');
+            --accent-white: rgba(255, 255, 255, 0.9);
+            --sub-text: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            background: #000;
+            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Cover Header Container */
+        .hero {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center; 
+
+/* 1. MIDDLE OVERLAY: 0.5 is the perfect balance for text legibility vs image visibility */ background: 
+linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+var(--banner-img); 
+
+/* 2. BALANCED POP: Enough to see the colors, but not so much they look artificial */ filter: brightness(1.05) saturate(1.4) contrast(1.05); background-size: cover; 
+
+background-size: cover;
+            background-position: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Interactive Illumination Layer (Spotlight) */
+        .spotlight {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            /* Radial gradient centered on CSS variables updated by JS */
+            background: radial-gradient(
+                circle 220px at var(--x, 50%) var(--y, 50%), 
+                rgba(255, 255, 255, 0.12) 0%, 
+                rgba(255, 255, 255, 0.05) 40%,
+                transparent 100%
+            );
+            z-index: 2;
+            transition: background 0.1s ease-out;
+        }
+
+        /* Typography and Content Styling */
+        .content {
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin: 0;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            text-transform: uppercase; word-spacing: 20px; /* Adjust this number to push the words apart */
+            color: var(--accent-white);
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 600;
+            /* Subtitle slightly larger as requested */
+            font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+            margin-top: 1.5rem;
+            color: var(--sub-text);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 10px 20px;
+            backdrop-filter: blur(8px);
+            display: inline-block;
+            border-radius: 4px;
+        }
+
+hr {
+    border: none;               /* Remove default border */
+    height: 1px;                /* Make it very thin and sharp */
+    background: linear-gradient(
+        to right, 
+        transparent, 
+        rgba(255, 255, 255, 0.5), 
+        transparent
+    );                          /* Fades out at the edges for a sleek look */
+    width: 60%;                 /* Don't let it span the whole screen */
+    margin: 1.5rem auto;        /* Adds vertical space and centers it */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2); /* Subtle glow */
+}
+
+
+        /* Particle Canvas for Symbols */
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            h2 {
+                letter-spacing: 0.15em;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero" id="hero">
+        <!-- Canvas for the process mapping symbol particles -->
+        <canvas id="canvas"></canvas>
+        
+        <!-- Spotlight layer that follows the cursor -->
+        <div class="spotlight" id="spotlight"></div>
+        
+        <div class="content">
+            <h1>FirstName LastName</h1> 
+            <hr> <!-- This is your new line -->
+            <h2>Operations Specialist & Systems Architect</h2>
+        </div>
+    </section>
+
+    <script>
+        const hero = document.getElementById('hero');
+        const spotlight = document.getElementById('spotlight');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Track and update spotlight position
+        hero.addEventListener('mousemove', e => {
+            const rect = hero.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            spotlight.style.setProperty('--x', `${x}px`);
+            spotlight.style.setProperty('--y', `${y}px`);
+            
+            spawnSymbols(x, y);
+        });
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let particles = [];
+        const shapes = ['process', 'decision', 'terminator', 'document'];
+
+        class SymbolParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.shape = shapes[Math.floor(Math.random() * shapes.length)];
+                this.size = Math.random() * 12 + 10;
+                this.speedX = (Math.random() - 0.5) * 1.2;
+                this.speedY = (Math.random() - 0.5) * 1.2;
+                this.life = 1.0; 
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.015;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${this.life * 0.4})`;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+
+                if (this.shape === 'process') {
+                    ctx.strokeRect(-this.size, -this.size/1.5, this.size * 2, this.size * 1.3);
+                } else if (this.shape === 'decision') {
+                    ctx.moveTo(0, -this.size);
+                    ctx.lineTo(this.size * 1.2, 0);
+                    ctx.lineTo(0, this.size);
+                    ctx.lineTo(-this.size * 1.2, 0);
+                    ctx.closePath();
+                    ctx.stroke();
+                } else if (this.shape === 'terminator') {
+                    const w = this.size * 1.5;
+                    const h = this.size * 0.8;
+                    ctx.roundRect(-w/2, -h/2, w, h, 10);
+                    ctx.stroke();
+                } else if (this.shape === 'document') {
+                    const w = this.size;
+                    const h = this.size * 1.2;
+                    ctx.moveTo(-w, -h);
+                    ctx.lineTo(w, -h);
+                    ctx.lineTo(w, h);
+                    ctx.quadraticCurveTo(0, h + 5, -w, h);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.rotation += this.rotationSpeed;
+                this.life -= 0.007; 
+            }
+        }
+
+        function spawnSymbols(x, y) {
+            if (Math.random() > 0.82 && particles.length < 80) {
+                particles.push(new SymbolParticle(x, y));
+            }
+        }
+
+        // Draw connections between nearby symbols
+        function drawLines() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120) {
+                        const opacity = (1 - distance / 120) * Math.min(particles[i].life, particles[j].life) * 0.3;
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.setLineDash([4, 4]); // Dashed architecture lines
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                        ctx.setLineDash([]); // Reset
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw lines first so they are behind symbols
+            drawLines();
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                if (particles[i].life <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+       
+// --- UPDATED SYNC LOGIC --- 
+async function syncDesign() { 
+const API_URL = "https://script.google.com/macros/s/AKfycbxsOBjG8V5WHxfeZd7DrDfHrk4p6mVCHjpKCv7Hp-hI2BPbpZf13ASnQpbH66TtvbwQ/exec"; 
+
+try { 
+const response = await fetch(API_URL); 
+const s = await response.json(); 
+
+console.log("Success! Spreadsheet data:", s); 
+const h1 = document.querySelector('h1'); 
+if(s.title_text) h1.innerText = s.title_text; 
+h1.style.fontSize = s.title_size; 
+h1.style.fontWeight = s.title_weight; 
+h1.style.color = s.title_color; 
+
+const h2 = document.querySelector('h2'); 
+if(s.sub_text) h2.innerText = s.sub_text; 
+h2.style.color = s.sub_color; 
+
+const hero = document.getElementById('hero'); 
+if (hero && s.bg_url) { 
+   hero.style.backgroundImage = `linear-gradient(rgba(0,0,0,${s.bg_darkness}), rgba(0,0,0,${s.bg_darkness})), url('${s.bg_url}')`; 
+   hero.style.filter = `saturate(${s.bg_saturation}) brightness(1.05) blur(${s.bg_blur})`; 
+} 
+} catch (e) { 
+   console.error("The 'Handshake' failed:", e); 
+} 
+} 
+// --- START EVERYTHING --- 
+syncDesign(); // This calls the function above 
+if (!CanvasRenderingContext2D.prototype.roundRect) { CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) { 
+if (w < 2 * r) r = w / 2; 
+if (h < 2 * r) r = h / 2; 
+this.moveTo(x + r, y); 
+this.arcTo(x + w, y, x + w, y + h, r); 
+this.arcTo(x + w, y + h, x, y + h, r); 
+this.arcTo(x, y + h, x, y, r); 
+this.arcTo(x, y, x + w, y, r); 
+this.closePath(); 
+return this; 
+} 
+} 
+
+animate();
+</script> 
+</body> 
+</html>
+
